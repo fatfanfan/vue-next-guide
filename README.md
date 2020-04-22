@@ -220,6 +220,51 @@ interface DebuggerEvent {
 }
 ```
 
+## watchEffect() 函数
+
+当内部的依赖变化时，就会重新执行
+eg： 当内部的 `count` 变化
+
+```javascript
+export default {
+  setup() {
+    const count = ref(0);
+
+    watchEffect(() => {
+      console.log(count.value);
+    });
+
+    return {
+      count
+    };
+  }
+};
+```
+
+## readonly() 函数
+
+参数: `reactive` `ref` `plain` 对象
+返回值: 只读的对象引用
+
+任何的嵌套属性都是只读的
+
+```javascript
+const original = reactive({ count: 0 });
+
+const copy = readonly(original);
+
+watchEffect(() => {
+  // works for reactivity tracking
+  console.log(copy.count);
+});
+
+// mutating original will trigger watchers relying on the copy
+original.count++;
+
+// mutating the copy will fail and result in a warning
+copy.count++; // warning!
+```
+
 ## 生命周期函数
 
 所有现有的生命周期钩子都会有对应的 onXXX 函数（只能在 setup() 中使用）
